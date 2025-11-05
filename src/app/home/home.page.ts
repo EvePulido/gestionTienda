@@ -5,6 +5,7 @@ import {
   IonList, IonItem, IonLabel, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonGrid, IonRow, IonCol, IonSelect, IonSelectOption,
   IonIcon,
+  IonNote,
   IonMenu, IonMenuButton, IonMenuToggle, IonListHeader
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -75,6 +76,7 @@ const SALES_KEY    = 'sales';
     IonGrid, IonRow, IonCol, IonSelect, IonSelectOption,
     IonMenu, IonMenuButton, IonMenuToggle, IonListHeader,
     IonIcon,
+    IonNote,
     FormsModule, NgIf, NgFor, DatePipe
     // TitleCasePipe se quitó de aquí
   ],
@@ -111,7 +113,6 @@ export class HomePage {
     totalSales: 0,
     totalRevenue: 0,
     totalItems: 0,
-    topClient: { name: '', amount: 0 } as { name: string; amount: number } | null,
     topProduct: { name: '', qty: 0 } as { name: string; qty: number } | null
   };
 
@@ -402,23 +403,6 @@ export class HomePage {
       0
     );
 
-    // Agregación por cliente (monto total)
-    const byClient = new Map<string, number>();
-    const clientNames = new Map<string, string>();
-    for (const s of this.sales) {
-      byClient.set(s.clientId, (byClient.get(s.clientId) || 0) + s.total);
-      clientNames.set(s.clientId, s.clientName);
-    }
-
-    let topClient: { name: string; amount: number } | null = null;
-    for (const [id, amount] of byClient.entries()) {
-      if (!topClient || amount > topClient.amount) {
-        const snapshotName = clientNames.get(id);
-        const currentClient = this.clients.find(c => c.id === id);
-        topClient = { name: snapshotName || currentClient?.name || id, amount };
-      }
-    }
-
     // Agregación por producto (cantidad total)
     const byProduct = new Map<string, { name: string; qty: number }>();
     for (const s of this.sales) {
@@ -438,6 +422,6 @@ export class HomePage {
     }
 
     // Publicar resultados
-    this.report = { totalSales, totalRevenue, totalItems, topClient, topProduct };
+    this.report = { totalSales, totalRevenue, totalItems, topProduct };
   }
 }
