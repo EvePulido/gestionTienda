@@ -1,27 +1,50 @@
-#container {
+/* Contenedor de autenticación */
+.auth-container {
+  max-width: 500px;
+  /* Centrado horizontal */
+  margin: 0 auto; 
+}
+
+/* Estilos responsivos para el contenedor de auth */
+@media (min-width: 768px) {
+  .auth-container {
+    /* Añade espacio superior en pantallas grandes */
+    margin-top: 40px; 
+    padding: 24px;
+    border: 1px solid var(--ion-color-medium-shade, #ddd);
+    border-radius: 8px;
+  }
+}
+
+/* Fondo de la aplicación */
+.app-content {
+  --background: var(--ion-color-light-tint, #f4f5f8);
+}
+
+/* Quita el padding de las listas de formulario */
+.ion-no-padding {
+  padding: 0;
+}
+
+/* Margen estándar para botones */
+.ion-margin-top {
+  margin-top: 16px;
+}
+
+/* Estilo para los enlaces de cambio (Login <-> Registro) */
+.auth-toggle {
   text-align: center;
+  margin-top: 20px;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  a {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--ion-color-primary, #3880ff);
+  }
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
+/* Mensaje de error de autenticación/ventas */
+.auth-error {
+  color: var(--ion-color-danger, #eb445a);
+  padding: 8px 0;
 }

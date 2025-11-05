@@ -1,20 +1,348 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-menu contentId="main-content" *ngIf="session">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-list-header>{{ session?.storeName || 'Mi Tienda' }}</ion-list-header>
+      
+      <ion-menu-toggle auto-hide="false">
+        <ion-item button (click)="section='dashboard'">
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+        <ion-item button (click)="section='products'">
+          <ion-label>Productos</ion-label>
+        </ion-item>
+        <ion-item button (click)="section='clients'">
+          <ion-label>Clientes</ion-label>
+        </ion-item>
+        <ion-item button (click)="section='sales'">
+          <ion-label>Ventas</ion-label>
+        </ion-item>
+        <ion-item button (click)="section='reports'">
+          <ion-label>Reportes</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+<div class="ion-page" id="main-content">
+  
+  <ion-header *ngIf="session">
+    <ion-toolbar color="primary">
+      
+      <ion-buttons slot="start" class="ion-hide-md-up">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+
+      <ion-avatar slot="start" style="margin-left:8px">
+        <img [src]="session?.storeImage || 'assets/store-placeholder.png'" alt="logo" />
+      </ion-avatar>
+
+      <ion-title class="ion-hide-md-up">
+         {{ getSpanishTitle() }}
+      </ion-title>
+
+      <ion-title slot="start" class="ion-hide-md-down">
+         {{ getSpanishTitle() }}
+      </ion-title>
+      
+      <ion-buttons slot="secondary" class="ion-hide-md-down">
+        <ion-button (click)="section='dashboard'">Inicio</ion-button>
+        <ion-button (click)="section='products'">Productos</ion-button>
+        <ion-button (click)="section='clients'">Clientes</ion-button>
+        <ion-button (click)="section='sales'">Ventas</ion-button>
+        <ion-button (click)="section='reports'">Reportes</ion-button>
+      </ion-buttons>
+
+      <ion-buttons slot="end">
+        <ion-button (click)="logout()">Cerrar sesión</ion-button>
+      </ion-buttons>
+
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
-</ion-content>
+  <ion-content
+    class="ion-padding" 
+    [class.app-content]="session"
+  >
+    <ng-container *ngIf="!session">
+      <div class="auth-container">
+        <h2 class="ion-text-center">
+          {{ authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta' }}
+        </h2>
+
+        <ion-list *ngIf="authMode==='login'" class="ion-no-padding">
+          <ion-item lines="full">
+            <ion-label position="stacked">Usuario</ion-label>
+            <ion-input [(ngModel)]="loginForm.username"></ion-input>
+          </ion-item>
+          <ion-item lines="full">
+            <ion-label position="stacked">Contraseña</ion-label>
+            <ion-input type="password" [(ngModel)]="loginForm.password"></ion-input>
+          </ion-item>
+          <ion-button expand="block" (click)="doLogin()" class="ion-margin-top">Iniciar sesión</ion-button>
+          <p class="auth-toggle">
+            ¿No tienes cuenta?
+            <a (click)="switchAuth('register')">Regístrate</a>
+          </p>
+          <p *ngIf="authError" class="auth-error ion-text-center">{{ authError }}</p>
+        </ion-list>
+
+        <ion-list *ngIf="authMode==='register'" class="ion-no-padding">
+          <ion-item lines="full">
+            <ion-label position="stacked">Usuario</ion-label>
+            <ion-input [(ngModel)]="registerForm.username"></ion-input>
+          </ion-item>
+          <ion-item lines="full">
+            <ion-label position="stacked">Contraseña</ion-label>
+            <ion-input type="password" [(ngModel)]="registerForm.password"></ion-input>
+          </ion-item>
+          <ion-item lines="full">
+            <ion-label position="stacked">Nombre de tienda</ion-label>
+            <ion-input [(ngModel)]="registerForm.storeName"></ion-input>
+          </ion-item>
+          <ion-item lines="full">
+            <ion-label position="stacked">URL/Imagen de tienda</ion-label>
+            <ion-input [(ngModel)]="registerForm.storeImage" placeholder="https://..."></ion-input>
+          </ion-item>
+          <ion-button expand="block" (click)="doRegister()" class="ion-margin-top">Registrarme</ion-button>
+          <p class="auth-toggle">
+            <a (click)="switchAuth('login')">Iniciar sesión</a>
+          </p>
+          <p *ngIf="authError" class="auth-error ion-text-center">{{ authError }}</p>
+        </ion-list>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="session">
+      <div *ngIf="section==='dashboard'" class="ion-text-center">
+        <h2>¡Bienvenido a {{ session.storeName }}!</h2>
+        <p>Usa el menú para administrar tu tienda.</p>
+      </div>
+
+      <ng-container *ngIf="section==='products'">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              {{ productForm.id ? 'Editar producto' : 'Nuevo producto' }}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input [(ngModel)]="productForm.name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Descripción</ion-label>
+                <ion-input [(ngModel)]="productForm.description"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Existencias</ion-label>
+                <ion-input type="number" [(ngModel)]="productForm.stock"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Precio costo</ion-label>
+                <ion-input type="number" [(ngModel)]="productForm.costPrice"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Precio venta</ion-label>
+                <ion-input type="number" [(ngModel)]="productForm.salePrice"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">URL/Imagen</ion-label>
+                <ion-input [(ngModel)]="productForm.image"></ion-input>
+              </ion-item>
+            </ion-list>
+            <ion-button expand="block" (click)="saveProduct()">Guardar</ion-button>
+            <ion-button
+              expand="block"
+              fill="clear"
+              *ngIf="productForm.id"
+              (click)="resetProduct()">Cancelar edición</ion-button>
+          </ion-card-content>
+        </ion-card>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="6" size-lg="4" *ngFor="let p of products">
+              <ion-card>
+                <img *ngIf="p.image" [src]="p.image" alt="img" style="width:100%; height: 180px; object-fit: cover;" />
+                <ion-card-header>
+                  <ion-card-title>{{p.name}} — ${{p.salePrice}}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <p>{{p.description}}</p>
+                  <p>Stock: {{p.stock}} | Costo: ${{p.costPrice}}</p>
+                  <ion-button size="small" (click)="editProduct(p)">Editar</ion-button>
+                  <ion-button size="small" color="danger" (click)="deleteProduct(p.id)">Eliminar</ion-button>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ng-container>
+
+      <ng-container *ngIf="section==='clients'">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              {{ clientForm.id ? 'Editar cliente' : 'Nuevo cliente' }}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input [(ngModel)]="clientForm.name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Domicilio</ion-label>
+                <ion-input [(ngModel)]="clientForm.address"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Teléfono</ion-label>
+                <ion-input [(ngModel)]="clientForm.phone"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Correo</ion-label>
+                <ion-input type="email" [(ngModel)]="clientForm.email"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">URL/Imagen</ion-label>
+                <ion-input [(ngModel)]="clientForm.image"></ion-input>
+              </ion-item>
+            </ion-list>
+            <ion-button expand="block" (click)="saveClient()">Guardar</ion-button>
+            <ion-button
+              expand="block"
+              fill="clear"
+              *ngIf="clientForm.id"
+              (click)="resetClient()">Cancelar edición</ion-button>
+          </ion-card-content>
+        </ion-card>
+        <ion-list>
+          <ion-item *ngFor="let c of clients">
+            <ion-avatar slot="start" *ngIf="c.image">
+              <img [src]="c.image" />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{c.name}}</h2>
+              <p>{{c.address}} · {{c.phone}} · {{c.email}}</p>
+            </ion-label>
+            <ion-button slot="end" size="small" (click)="editClient(c)">Editar</ion-button>
+            <ion-button slot="end" size="small" color="danger" (click)="deleteClient(c.id)">Eliminar</ion-button>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+
+      <ng-container *ngIf="section==='sales'">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Nueva venta</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="stacked">Cliente</ion-label>
+              <ion-select interface="popover" [(ngModel)]="saleForm.clientId">
+                <ion-select-option *ngFor="let c of clients" [value]="c.id">
+                  {{c.name}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Producto</ion-label>
+              <ion-select interface="popover" [(ngModel)]="saleAdd.productId">
+                <ion-select-option *ngFor="let p of products" [value]="p.id">
+                  {{p.name}} (stock {{p.stock}}) — ${{p.salePrice}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Cantidad</ion-label>
+              <ion-input type="number" [(ngModel)]="saleAdd.qty"></ion-input>
+            </ion-item>
+            <ion-button expand="block" (click)="addItemToSale()">Agregar</ion-button>
+            <ion-list *ngIf="saleForm.items.length">
+              <ion-item *ngFor="let it of saleForm.items; let i = index">
+                <ion-label>
+                  <h2>{{it.name}}</h2>
+                  <p>
+                    Cant: {{it.qty}} · Precio: ${{it.price}} · Subtotal: ${{it.subtotal}}
+                  </p>
+                </ion-label>
+                <ion-button size="small" color="danger" (click)="removeItemFromSale(i)">Quitar</ion-button>
+              </ion-item>
+            </ion-list>
+            <h3 *ngIf="saleForm.items.length" class="ion-text-end">Total: ${{ saleTotal }}</h3>
+            <p *ngIf="saleError" class="auth-error ion-text-center">{{saleError}}</p>
+            <ion-button
+              expand="block"
+              [disabled]="!saleForm.items.length || !saleForm.clientId"
+              (click)="saveSale()">Guardar venta</ion-button>
+            <ion-button
+              expand="block"
+              fill="clear"
+              (click)="resetSale()">Cancelar</ion-button>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Ventas realizadas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let s of sales">
+                <ion-label>
+                  <h2>{{ s.date | date:'short' }} — {{ s.clientName }}</h2>
+                  <p>Artículos: {{ s.items.length }} · Total: ${{ s.total }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ng-container>
+
+      <ng-container *ngIf="section==='reports'">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Resumen</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="full">
+              <ion-item>
+                <ion-label>Total de ventas:</ion-label>
+                <strong>{{report.totalSales}}</strong>
+              </ion-item>
+              <ion-item>
+                <ion-label>Ingresos acumulados:</ion-label>
+                <strong>${{report.totalRevenue}}</strong>
+              </ion-item>
+              <ion-item>
+                <ion-label>Artículos vendidos:</ion-label>
+                <strong>{{report.totalItems}}</strong>
+              </ion-item>
+              <ion-item>
+                <ion-label>Cliente con más compras:</ion-label>
+                <strong>
+                  {{report.topClient?.name || '—'}}
+                  (${{report.topClient?.amount || 0}})
+                </strong>
+              </ion-item>
+              <ion-item>
+                <ion-label>Producto más vendido:</ion-label>
+                <strong>
+                  {{report.topProduct?.name || '—'}}
+                  ({{report.topProduct?.qty || 0}} uds)
+                </strong>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ng-container>
+    </ng-container>
+  </ion-content>
+</div>
