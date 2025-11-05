@@ -1,18 +1,18 @@
 /* Contenedor de autenticación */
 .auth-container {
   max-width: 500px;
-  /* Centrado horizontal */
-  margin: 0 auto; 
+  margin: 0 auto;
 }
 
 /* Estilos responsivos para el contenedor de auth */
 @media (min-width: 768px) {
   .auth-container {
-    /* Añade espacio superior en pantallas grandes */
-    margin-top: 40px; 
+    margin-top: 40px;
     padding: 24px;
+    /* NUEVO: Sombra más suave y borde moderno */
     border: 1px solid var(--ion-color-medium-shade, #ddd);
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -31,6 +31,11 @@
   margin-top: 16px;
 }
 
+/* NUEVO: Margen para los items de formulario */
+.ion-margin-bottom {
+  margin-bottom: 12px;
+}
+
 /* Estilo para los enlaces de cambio (Login <-> Registro) */
 .auth-toggle {
   text-align: center;
@@ -47,4 +52,59 @@
 .auth-error {
   color: var(--ion-color-danger, #eb445a);
   padding: 8px 0;
+}
+
+//* Estilo para el ítem de menú seleccionado */
+ion-menu ion-item.selected {
+  /* Fondo azul sólido (el color primario) */
+  --background: var(--ion-color-primary);
+  
+  /* Color de la letra (label) en blanco */
+  --color: var(--ion-color-primary-contrast);
+  
+  /* Puedes quitar el borde izquierdo, ya no se verá */
+  border-left: none;
+}
+
+/* Estilo para los iconos del menú (NO seleccionado) */
+ion-menu ion-icon {
+  margin-right: 16px;
+  color: var(--ion-color-medium);
+}
+
+/* Ajuste para el ICONO del ítem seleccionado */
+ion-menu ion-item.selected ion-icon {
+  /* Color del icono también en blanco */
+  color: var(--ion-color-primary-contrast);
+}
+
+/* Estilo moderno para las tarjetas (formularios, productos, etc.) */
+ion-card {
+  /* Sombra más sutil */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  /* Bordes más redondeados */
+  border-radius: 12px;
+}
+
+/* Ajuste para los inputs con fill="outline" */
+ion-item[fill="outline"] {
+  --border-radius: 8px !important;
+  --background: var(--ion-color-light-shade);
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+/* Quita el fondo de la lista cuando se usan inputs perfilados */
+ion-list > ion-item[fill="outline"] {
+  --background: transparent;
+}
+
+/* Asegura que el header principal (blanco) tenga una línea divisoria */
+ion-header ion-toolbar {
+  border-bottom: 1px solid var(--ion-color-step-150, #e0e0e0);
+}
+
+/* El toolbar del menú (oscuro) no necesita la línea */
+ion-menu ion-toolbar {
+  border-bottom: none;
 }

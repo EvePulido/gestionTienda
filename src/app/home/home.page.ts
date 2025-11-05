@@ -4,7 +4,7 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonAvatar,
   IonList, IonItem, IonLabel, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonGrid, IonRow, IonCol, IonSelect, IonSelectOption,
-  // Componentes agregados para el menú responsivo
+  IonIcon,
   IonMenu, IonMenuButton, IonMenuToggle, IonListHeader
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -74,7 +74,7 @@ const SALES_KEY    = 'sales';
     IonList, IonItem, IonLabel, IonInput, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
     IonGrid, IonRow, IonCol, IonSelect, IonSelectOption,
     IonMenu, IonMenuButton, IonMenuToggle, IonListHeader,
-    
+    IonIcon,
     FormsModule, NgIf, NgFor, DatePipe
     // TitleCasePipe se quitó de aquí
   ],
